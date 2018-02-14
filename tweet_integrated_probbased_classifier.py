@@ -71,7 +71,11 @@ print(hashtag_pred)
 print(hashtag_pred.shape)
 
 ## Generate multiple sets of weights for text, description, and hashtags
-w_text_range = np.arrrange(0.3, 0.6, 0.05)
-w_description_range = np.arrange(0, 0.3, 0.1)
+w_text_range = np.arange(0.3, 0.6, 0.05)
+w_description_range = np.arange(0, 0.3, 0.1)
+weight_sets = []
 
-for w_description in []
+for w_description in w_description_range:
+	for w_text in w_text_range:
+		weight_sets.append([w_text, w_description, 1 - w_text - w_description])
+
