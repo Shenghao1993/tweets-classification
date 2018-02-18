@@ -7,11 +7,15 @@ from sklearn.model_selection import KFold
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report, precision_score, recall_score
 
+import tweet_mixed_preprocessor
 
-data_dir = './data' 
+data_dir = './data'
+features_dir = './features'
+
+tweet_mixed_preprocessor.main()
 
 print("Loading data...")
-with open(os.path.join(data_dir, 'samples_processed.txt'), 'r') as f:
+with open(os.path.join(features_dir, 'mixed_samples_processed.txt'), 'r') as f:
 	x = f.readlines()
 with open(os.path.join(data_dir, 'labels.txt'), 'r') as f:
 	y = np.array(f.readlines())

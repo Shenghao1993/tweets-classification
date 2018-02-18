@@ -67,9 +67,10 @@ def pre_process(str, porter):
                             
 
 
-
-if __name__ == "__main__":
+def main():
     data_dir = './data'  ##Setting your own file path here.
+    stats_dir = './stats'
+    features_dir = './features'
 
     x_filename = 'samples.txt'
     y_filename = 'labels.txt'
@@ -115,10 +116,10 @@ if __name__ == "__main__":
 
 
             
-    ##saving the statistics of tf and df for each words into file
+    ## Save the statistics of tf and df for each words into file
     print("The number of unique words in data set is %i." %len(words_stat.keys()))
     lowTF_words = set()
-    with open(os.path.join(data_dir, 'mixed_words_statistics.txt'), 'w') as f:
+    with open(os.path.join(stats_dir, 'mixed_words_statistics.txt'), 'w') as f:
         f.write('TF\tDF\tWORD\n')
         for word, stat in sorted(words_stat.items(), key=lambda i: i[1], reverse=True):
             f.write('\t'.join([str(m) for m in stat[0:2]]) + '\t' + word +  '\n')
@@ -128,8 +129,8 @@ if __name__ == "__main__":
     # print(stops)
 
 
-    ###Re-process samples, filter low frequency words...
-    fout = open(os.path.join(data_dir, 'mixed_samples_processed.txt'), 'w')
+    ## Re-process samples, filter low frequency words...
+    fout = open(os.path.join(features_dir, 'mixed_samples_processed.txt'), 'w')
     tweets_new = []
     for tweet in tweets:
         words = tweet.split(' ')

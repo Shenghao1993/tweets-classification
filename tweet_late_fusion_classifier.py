@@ -6,6 +6,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
 from sklearn import svm
 from sklearn.metrics import classification_report, precision_score, recall_score, f1_score
 
@@ -53,12 +54,14 @@ text_pred = np.empty([0, 10])
 description_pred = np.empty([0, 10])
 hashtag_pred = np.empty([0, 10])
 
+## Develop classifier for tweet text
 for train, test in kf.split(x_text_feats):
+	model = MultinomialNB().fit(x_text_feats[train], y[train])
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_text_feats[train], y[train])
 	# model = RandomForestClassifier(n_estimators=20, min_samples_split=5, random_state=0).fit(x_text_feats[train], y[train])
 	# model = MLPClassifier(solver='adam', activation='logistic', alpha=1e-5, hidden_layer_sizes=(10,), random_state=1).fit(x_text_feats[train], y[train])
-	model = MultinomialNB().fit(x_text_feats[train], y[train])
-	# model = svm.SVC(probability=True).fit(x_text_feats[train], y[train])
+	# model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0005, \
+	# 		random_state = 123, max_iter = 100).fit(x_text_feats[train], y[train])
 	predicts = model.predict_proba(x_text_feats[test])
 	text_pred = np.concatenate((text_pred, predicts))
 
@@ -67,11 +70,12 @@ print("Predicted classes according to tweet texts...")
 print(text_pred)
 print(text_pred.shape)
 
-
+## Develop classifier for user description 
 for train, test in kf.split(x_description_feats):
+	# model = MultinomialNB().fit(x_description_feats[train], y[train])
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_description_feats[train], y[train])
-	model = MultinomialNB().fit(x_description_feats[train], y[train])
-	# model = svm.SVC(probability=True).fit(x_description_feats[train], y[train])
+	model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0004, \
+			random_state = 123, max_iter = 1000).fit(x_description_feats[train], y[train])
 	predicts = model.predict_proba(x_description_feats[test])
 	description_pred = np.concatenate((description_pred, predicts))
 
@@ -80,11 +84,12 @@ print("Predicted classes according to tweet user descriptions...")
 print(description_pred)
 print(description_pred.shape)
 
-
+## Develop classifier for tweet hashtags
 for train, test in kf.split(x_hashtags_feats):
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_hashtags_feats[train], y[train])
 	model = MultinomialNB().fit(x_hashtags_feats[train], y[train])
-	# model = svm.SVC(probability=True).fit(x_hashtags_feats[train], y[train])
+	# model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0004, \
+	# 		random_state = 123, max_iter = 1000).fit(x_hashtags_feats[train], y[train])
 	predicts = model.predict_proba(x_hashtags_feats[test])
 	hashtag_pred = np.concatenate((hashtag_pred, predicts))
 
@@ -101,8 +106,7 @@ for w_description in w_description_range:
 	for w_text in w_text_range:
 		weight_sets.append([w_text, w_description, 1 - w_text - w_description])
 
-##
-
+## Search for optimal weights to be assigned to individual classifier
 y_num = np.array([int(cls[:-1]) for cls in y])
 precisions = []
 recalls = []
