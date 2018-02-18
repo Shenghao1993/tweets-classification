@@ -3,13 +3,22 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import KFold
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
-from sklearn.metrics import classification_report, precision_score, recall_score
+from sklearn.metrics import classification_report, precision_score, recall_score, f1_score
+
+import tweet_text_preprocessor
+import tweet_description_preprocessor
+import tweet_hashtag_preprocessor
 
 data_dir = './data'
 features_dir = './features'
+
+tweet_text_preprocessor.main()
+tweet_description_preprocessor.main()
+tweet_hashtag_preprocessor.main()
 
 print("Loading tweet texts...")
 with open(os.path.join(features_dir, 'text_processed.txt'), 'r') as f_text:
@@ -45,9 +54,10 @@ description_pred = np.empty([0, 10])
 hashtag_pred = np.empty([0, 10])
 
 for train, test in kf.split(x_text_feats):
-	model = KNeighborsClassifier(n_neighbors=7).fit(x_text_feats[train], y[train])
+	# model = KNeighborsClassifier(n_neighbors=7).fit(x_text_feats[train], y[train])
 	# model = RandomForestClassifier(n_estimators=20, min_samples_split=5, random_state=0).fit(x_text_feats[train], y[train])
-	# model = MultinomialNB().fit(x_text_feats[train], y[train])
+	# model = MLPClassifier(solver='adam', activation='logistic', alpha=1e-5, hidden_layer_sizes=(10,), random_state=1).fit(x_text_feats[train], y[train])
+	model = MultinomialNB().fit(x_text_feats[train], y[train])
 	# model = svm.SVC(probability=True).fit(x_text_feats[train], y[train])
 	predicts = model.predict_proba(x_text_feats[test])
 	text_pred = np.concatenate((text_pred, predicts))
@@ -96,6 +106,7 @@ for w_description in w_description_range:
 y_num = np.array([int(cls[:-1]) for cls in y])
 precisions = []
 recalls = []
+f1_scores = []
 
 for i in range(len(weight_sets)):
 	w_text, w_description, w_hashtags = weight_sets[i]
@@ -104,14 +115,14 @@ for i in range(len(weight_sets)):
 
 	avg_p = precision_score(y_num, combined_pred, average='macro')
 	avg_r = recall_score(y_num, combined_pred, average='macro')
-	# print(weight_sets[i])
-	# print('Average Precision is %f.' %avg_p)
-	# print('Average Recall is %f.' %avg_r)
+	avg_f1 = f1_score(y_num, combined_pred, average='macro')
 
 	precisions.append(avg_p)
 	recalls.append(avg_r)
+	f1_scores.append(avg_f1)
 
-opt_id = np.argmax(precisions)
+opt_id = np.argmax(f1_scores)
 print(weight_sets[opt_id])
 print('Optimal Precision is %f.' %precisions[opt_id])
 print('Optimal Recall is %f.' %recalls[opt_id])
+print('Optimal F1 score is %f.' %f1_scores[opt_id])

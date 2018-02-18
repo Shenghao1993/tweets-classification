@@ -66,9 +66,7 @@ def pre_process(str, porter):
     return str
                             
 
-
-
-if __name__ == "__main__":
+def main():
     data_dir = './data'  ##Setting your own file path here.
 
     x_filename = 'samples.txt'
@@ -83,7 +81,6 @@ if __name__ == "__main__":
     print('start loading and process samples...')
     words_stat = {} # record statistics of the df and tf for each word; Form: {word:[tf, df, tweet index]}
     tweets = []
-    cnt = 0
     with open(os.path.join(data_dir, x_filename)) as f:
         for i, line in enumerate(f):
             postprocess_tweet = []
@@ -107,7 +104,8 @@ if __name__ == "__main__":
     ## Save the statistics of tf and df for each words into file
     print("The number of unique words in data set is %i." %len(words_stat.keys()))
     lowTF_words = set()
-    with open(os.path.join(data_dir, 'text_words_statistics.txt'), 'w') as f:
+    stats_dir = './stats'
+    with open(os.path.join(stats_dir, 'text_words_statistics.txt'), 'w') as f:
         f.write('TF\tDF\tWORD\n')
         for word, stat in sorted(words_stat.items(), key=lambda i: i[1], reverse=True):
             f.write('\t'.join([str(m) for m in stat[0:2]]) + '\t' + word +  '\n')
@@ -118,7 +116,8 @@ if __name__ == "__main__":
 
 
     ## Re-process samples, filter low frequency words...
-    fout = open(os.path.join(data_dir, 'text_processed.txt'), 'w')
+    features_dir = './features'
+    fout = open(os.path.join(features_dir, 'text_processed.txt'), 'w')
     tweets_new = []
     for tweet in tweets:
         words = tweet.split(' ')

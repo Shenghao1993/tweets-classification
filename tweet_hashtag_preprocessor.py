@@ -58,8 +58,7 @@ def pre_process(str, porter):
     return str
 
 
-
-if __name__ == "__main__":
+def main():
 	data_dir = './data'
 	tweet_source_file = 'samples.txt'
 
@@ -70,7 +69,6 @@ if __name__ == "__main__":
 	print('start loading and process samples...')
 	hashtags_stat = {} # record statistics of the df and tf for each hashtag; Form: {tag:[tf, df, tweet index]}
 	hashtags = []
-	cnt = 0
 	with open(os.path.join(data_dir, tweet_source_file)) as f:
 		for i, line in enumerate(f):
 			postprocess_hashtag_list = []
