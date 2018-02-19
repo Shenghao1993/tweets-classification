@@ -56,9 +56,9 @@ hashtag_pred = np.empty([0, 10])
 
 ## Develop classifier for tweet text
 for train, test in kf.split(x_text_feats):
-	model = MultinomialNB().fit(x_text_feats[train], y[train])
+	# model = MultinomialNB().fit(x_text_feats[train], y[train])
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_text_feats[train], y[train])
-	# model = RandomForestClassifier(n_estimators=20, min_samples_split=5, random_state=0).fit(x_text_feats[train], y[train])
+	model = RandomForestClassifier(n_estimators = 500, max_features = 7, random_state=0).fit(x_text_feats[train], y[train])
 	# model = MLPClassifier(solver='adam', activation='logistic', alpha=1e-5, hidden_layer_sizes=(10,), random_state=1).fit(x_text_feats[train], y[train])
 	# model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0005, \
 	# 		random_state = 123, max_iter = 100).fit(x_text_feats[train], y[train])
@@ -72,10 +72,10 @@ print(text_pred.shape)
 
 ## Develop classifier for user description 
 for train, test in kf.split(x_description_feats):
-	# model = MultinomialNB().fit(x_description_feats[train], y[train])
+	model = MultinomialNB().fit(x_description_feats[train], y[train])
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_description_feats[train], y[train])
-	model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0004, \
-			random_state = 123, max_iter = 1000).fit(x_description_feats[train], y[train])
+	# model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0004, \
+	# 		random_state = 123, max_iter = 1000).fit(x_description_feats[train], y[train])
 	predicts = model.predict_proba(x_description_feats[test])
 	description_pred = np.concatenate((description_pred, predicts))
 
@@ -88,6 +88,7 @@ print(description_pred.shape)
 for train, test in kf.split(x_hashtags_feats):
 	# model = KNeighborsClassifier(n_neighbors=7).fit(x_hashtags_feats[train], y[train])
 	model = MultinomialNB().fit(x_hashtags_feats[train], y[train])
+	# model = RandomForestClassifier(n_estimators = 500, max_features = 7, random_state=0).fit(x_hashtags_feats[train], y[train])
 	# model = SGDClassifier(loss = 'log', penalty = 'l2', alpha = 0.0004, \
 	# 		random_state = 123, max_iter = 1000).fit(x_hashtags_feats[train], y[train])
 	predicts = model.predict_proba(x_hashtags_feats[test])
@@ -125,7 +126,7 @@ for i in range(len(weight_sets)):
 	recalls.append(avg_r)
 	f1_scores.append(avg_f1)
 
-opt_id = np.argmax(f1_scores)
+opt_id = np.argmax(precisions)
 print(weight_sets[opt_id])
 print('Optimal Precision is %f.' %precisions[opt_id])
 print('Optimal Recall is %f.' %recalls[opt_id])
